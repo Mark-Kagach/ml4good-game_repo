@@ -1,0 +1,30 @@
+▶  The Great Cursor Games: Build a Python Game!
+Create an amazing Python game with your partner using Cursor! At the end, everyone votes on the coolest game — there's a prize on offer for the winning pair! ★
+⚙  Setup
+Download Cursor (or another coding agent with a free plan if you’ve used Cursor a lot!).
+In your project directory, ask Cursor to set up a Python virtual environment using uv. Use Ctrl/Cmd + I to open the agent.
+You'll probably want pygame — but if you’ve used it before, then try something new!
+▸  Suggested workflow
+This is what works well for me, but it's a suggestion, not a recipe. Feel free to deviate!
+Brainstorm with your partner and the agent. Before writing any code, talk through ideas together. Ask the agent to poke holes, suggest mechanics, or propose variations. Converge on something you're both excited about.
+Plan first, in Plan mode. Use Cursor's Plan mode to iterate on a spec with the agent — core mechanics, file structure, key data types, what “done” looks like for v1. Don't move on until you're genuinely happy with the plan! A good plan here saves a lot of thrashing later.
+Let Cursor build it. Hand the plan off and let the agent implement v1. Try the game it produces – how did it do?
+Iterate and go crazy! From here you have options:
+More Plans for bigger features or extensions — new levels, enemies, mechanics, sounds, a second game mode.
+Vibe-code smaller tweaks directly — tuning constants, polish, colors, quick fixes.
+Ask a new instance of the agent to review the code and propose changes/improvements – agents are pretty good reviewers, but can have blind spots when working with the same context that generated the original code!
+Write tests if you want to see how Cursor holds up as a real software engineer. Optional, but interesting if you're curious about agent behavior on a more disciplined workflow.
+✦  Tips
+◆ Cursor is multimodal — upload images! Drop in reference art, screenshots of games you like, a mood board, or a sketch of your UI. Great for theme styling (“make it look like this pixel-art screenshot”) or getting the agent to match a specific vibe.
+Give the agent context. Point it at relevant files with @, paste error messages verbatim, and state constraints explicitly (e.g. “keep it single-file”, “no external dependencies beyond pygame”).
+Small, verifiable steps beat big leaps. It's much easier to catch the agent going off the rails in a 50-line diff than a 500-line one.
+Read the diffs, especially early on. You'll learn the agent's habits — where it over-engineers, where it hallucinates APIs, where it's genuinely sharp.
+Steer, don't just accept. If the agent is heading somewhere you don't like, stop it early and redirect. Rolling back is cheap.
+Talk to each other! The partner not driving should be reading along and flagging things. Two humans reviewing one agent is a strong setup.
+⚠  When things break
+Errors: paste them into the agent verbatim and say “fix this.”
+Requests blocked: switch to the “auto” model, or start a new chat.
+Agent seems confused or stuck in a loop: start a new chat and re-add the relevant context. A fresh context window often fixes it!
+⚡  A note on experimentation
+Working effectively with coding agents is a rapidly evolving practice — the “best” workflow today may look quaint in six months. Treat the above as one starting point, not the One True Way. If you have a different technique you want to try, or you want to run an experiment mid-session (different model, different prompting style, pure vibe-coding vs. strict spec-first), go for it! Part of the value of this session is finding what works for you.
+Have fun! ★ ✦ ◆
