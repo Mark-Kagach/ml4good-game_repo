@@ -87,16 +87,18 @@ _l1 += [(4, 28, "?")]
 _l1 += [(6, 29, "c")]  # Badge 1 (up high)
 _l1 += [(7, 28, "h")]  # hopper on the platform (overrides the coin on (7,28), that's fine)
 
-# SECTION C — floating island over a ground pit (forces a jump)
-_fill_row(_l1, 10, range(34, 40), "#")
+# SECTION C — floating island over a ground pit (forces a jump).
+# Extended to col 44 so the player can reach the row-8 high route in
+# section D with a short jump off the right edge (jump reach same-row
+# ≈184 px covers 40 px easily).
+_fill_row(_l1, 10, range(34, 45), "#")
 _l1 += [(9, 36, "h")]  # hopper patrols the island
 _l1 += [(7, 35, "o"), (7, 37, "o"), (7, 39, "o")]
 _l1 += [(4, 37, "?")]
 
-# SECTION D — high route w/ brick cluster + a secret ? way up top
+# SECTION D — high route w/ brick cluster
 _fill_row(_l1, 8, range(46, 56), "#")
 _l1 += [(5, 48, "b"), (5, 49, "b"), (5, 50, "?"), (5, 51, "b"), (5, 52, "b")]
-_l1 += [(3, 50, "?")]  # secret coin block above the bricks
 _l1 += [(7, 47, "w"), (7, 53, "w")]  # two walkers on the wide platform
 _l1 += [(6, 58, "d")]  # drone hovers in the gap beyond
 
@@ -106,11 +108,12 @@ _l1 += [(11, 64, "T"), (11, 65, "T"), (12, 64, "t"), (12, 65, "t")]
 _l1 += [(10, 64, "o"), (10, 65, "o")]
 _l1 += [(12, 68, "h")]
 
-# SECTION F — tall jumpable pipe with coins on top
-_l1 += [(9, 72, "T"), (9, 73, "T")]
-for r in (10, 11, 12):
+# SECTION F — jumpable pipe with coins on top (3 tiles so the player can
+# actually land on it from ground — a 4-tile pipe is unreachable)
+_l1 += [(10, 72, "T"), (10, 73, "T")]
+for r in (11, 12):
     _l1 += [(r, 72, "t"), (r, 73, "t")]
-_l1 += [(8, 72, "o"), (8, 73, "o")]  # reward for jumping on top
+_l1 += [(9, 72, "o"), (9, 73, "o")]  # reward for jumping on top
 
 # SECTION G — descending staircase w/ coin trail
 _l1 += [(12, 78, "#"), (12, 79, "#"), (12, 80, "#")]
@@ -119,12 +122,13 @@ _l1 += [(10, 78, "#")]
 _l1 += [(9, 78, "o"), (10, 79, "o"), (11, 80, "o")]
 _l1 += [(12, 84, "w")]
 
-# SECTION H — final high approach with Badge 3
-_fill_row(_l1, 8, range(86, 94), "#")
-_l1 += [(7, 87, "o"), (7, 89, "o"), (7, 91, "o"), (7, 93, "o")]
+# SECTION H — final approach on row 10 (reachable from ground — row 8
+# was too high to climb back up to after the descending staircase).
+_fill_row(_l1, 10, range(82, 94), "#")
+_l1 += [(9, 87, "o"), (9, 89, "o"), (9, 91, "o"), (9, 93, "o")]
 _l1 += [(4, 90, "?")]
-_l1 += [(6, 90, "c")]  # Badge 3 (high reward)
-_l1 += [(10, 85, "d")]  # second drone patrols the end
+_l1 += [(6, 90, "c")]  # Badge 3 — jump from the row-10 platform
+_l1 += [(7, 85, "d")]  # drone patrols above the platform
 
 # Flag + portal
 _l1 += [(12, 95, "F"), (11, 98, "E")]
@@ -135,7 +139,6 @@ LEVEL1_QUESTION_REWARDS = {
     (16, 4): "coin",
     (28, 4): "coin",
     (37, 4): "coin",
-    (50, 3): "coin",       # secret high block
     (50, 5): "flower",     # hidden inside brick cluster
     (90, 4): "coin",
 }
@@ -178,13 +181,12 @@ _l2 += [(12, 12, "w"), (7, 45, "d"), (6, 74, "d"), (12, 94, "g")]
 # Pipes (gauntlet): 2 side-by-side pipe pairs
 _l2 += [(11, 38, "T"), (11, 39, "T"), (12, 38, "t"), (12, 39, "t")]
 _l2 += [(10, 70, "T"), (10, 71, "T"), (11, 70, "t"), (11, 71, "t"), (12, 70, "t"), (12, 71, "t")]
-# Breakable brick ceiling hiding a row of coins (needs SUPER to smash through)
-_l2 += [(6, 16, "b"), (6, 17, "b"), (6, 18, "b"), (6, 19, "b")]
-_l2 += [(5, 16, "o"), (5, 17, "o"), (5, 18, "o"), (5, 19, "o")]
-# Upper-secret platform reached by the vertical elevator V at col 53
-_fill_row(_l2, 4, range(52, 57), "#")
-_l2 += [(3, 53, "o"), (3, 54, "o"), (3, 55, "o")]
-_l2 += [(3, 56, "?")]  # secret star up top
+# Breakable brick ceiling above the row-8 platform at cols 27-34 so the
+# player can actually reach it (from ground jump apex bottom=392 < row 6
+# brick bottom=280 — unreachable without a platform to jump from)
+_l2 += [(6, 29, "b"), (6, 30, "b"), (6, 31, "b"), (6, 32, "b")]
+# Coins revealed once the bricks break
+_l2 += [(4, 29, "o"), (4, 30, "o"), (4, 31, "o"), (4, 32, "o")]
 # Extra ? block near the pipe gauntlet
 _l2 += [(4, 40, "?")]
 
@@ -198,7 +200,6 @@ LEVEL2_QUESTION_REWARDS = {
     (88, 4): "coin",
     (45, 5): "flower",
     (48, 5): "coin",
-    (56, 3): "star",       # secret star atop the high platform
 }
 
 # ----------------------------- LEVEL 3 ------------------------------------
@@ -211,15 +212,21 @@ for c in range(40, 43):
     _l3 = [cell for cell in _l3 if not (cell[0] == 13 and cell[1] == c)]
 # Spawn platform
 _fill_row(_l3, 8, range(0, 10), "#")
-# Supply depot platform (cols 20-33): safe elevated ground
+# Stepping stone so the supply depot (row 8) is reachable from the row-8
+# spawn (10-col gap is too wide for a direct jump)
+_fill_row(_l3, 10, range(14, 19), "#")
+# Supply depot platform (cols 20-33): safe elevated ground w/ power-ups
 _fill_row(_l3, 8, range(20, 34), "#")
-# Gauntlet mid-platform
-_fill_row(_l3, 9, range(52, 60), "#")
-# Boss arena: two tall pedestals so the player can drop-stomp SCAMA
-_fill_rect(_l3, range(9, 13), range(63, 66), "#")  # left pedestal
-_fill_rect(_l3, range(9, 13), range(77, 80), "#")  # right pedestal
-# Post-boss floating platform to reach Badge 3 and portal
-_fill_row(_l3, 9, range(85, 95), "#")
+# Gauntlet mid-platform — row 10 so it's reachable from ground
+_fill_row(_l3, 10, range(52, 60), "#")
+# Boss arena: two pedestals so the player can drop-stomp SCAMA. 3 tiles
+# tall (rows 10-12) — a 4-tile pedestal is unreachable from ground so the
+# player would be walled in.
+_fill_rect(_l3, range(10, 13), range(63, 66), "#")  # left pedestal
+_fill_rect(_l3, range(10, 13), range(77, 80), "#")  # right pedestal
+# Post-boss platform — row 10 (reachable from ground), extended left
+# toward the right pedestal so the transition isn't a cruel gap
+_fill_row(_l3, 10, range(82, 95), "#")
 # Spawn / flag / portal
 _l3 += [(6, 5, "P"), (12, 94, "F"), (11, 97, "E")]
 # ? blocks - opening (intro coin)
@@ -228,14 +235,18 @@ _l3 += [(4, 12, "?")]
 _l3 += [(4, 22, "?"), (4, 25, "?"), (4, 28, "?")]
 # Boss arena ? blocks: coin + star for emergency
 _l3 += [(4, 65, "?"), (4, 78, "?")]
-# Brick cluster above gauntlet that hides fireflower
-_l3 += [(5, 48, "b"), (5, 49, "?"), (5, 50, "b")]
+# (previously had a brick cluster at (5, 48-50) but the nearest platforms
+# were too far to head-bump from, so it was unreachable and removed)
 # Moving platform spans the pit (col 40-42)
 _l3 += [(11, 38, "M")]
 # Coins
 _fill_row(_l3, 6, (14, 23, 26, 29, 45, 57, 64, 67, 74, 77, 88, 90, 92), "o")
-# Badges (3 required: easy / mid / after-boss)
-_l3 += [(10, 17, "c"), (4, 45, "c"), (8, 88, "c")]
+# Badges (3 required). Avoid (10, 17) / (4, 45) / (8, 88) — all embedded
+# in solid blocks or out of reach. New spots are all reachable:
+#   (12, 17) — floats above ground near stepping stone (walk-collect)
+#   (6, 55)  — above the gauntlet row-10 platform (jump from it)
+#   (6, 88)  — above the row-10 end platform (jump from it)
+_l3 += [(12, 17, "c"), (6, 55, "c"), (6, 88, "c")]
 # Enemies (reduce density along the main path, concentrate in gauntlet)
 _l3 += [
     (12, 14, "w"),       # opening walker
@@ -253,7 +264,6 @@ LEVEL3_QUESTION_REWARDS = {
     (28, 4): "flower",
     (65, 4): "coin",
     (78, 4): "star",  # emergency star mid-boss
-    (49, 5): "flower",
 }
 
 
@@ -1375,22 +1385,19 @@ class Player:
         now = pygame.time.get_ticks()
         blink = now < self.invincible_until and not self.starred() and (now // 90) % 2 == 0
         if blink:
-            # draw fireballs still
             for fb in self.fireballs:
                 fb.draw(surface, camera_x, camera_y)
             return
         x = self.rect.x - camera_x
         y = self.rect.y - camera_y
 
-        # Star tint cycle through cyan/magenta/yellow/green
+        # Star tint cycle
         if self.starred():
-            tint_cycle = (now // 80) % 4
-            tints = [CYAN, MAGENTA, YELLOW, GREEN]
-            tint = tints[tint_cycle]
+            tint = [CYAN, MAGENTA, YELLOW, GREEN][(now // 80) % 4]
         else:
             tint = None
 
-        # Jacket color changes with power
+        # Jacket color signals power state
         if self.power == "fire":
             jacket = (255, 120, 60)
         elif self.power == "super":
@@ -1400,37 +1407,74 @@ class Player:
         if tint:
             jacket = tint
 
-        # Ilya's white skin face
-        pygame.draw.rect(surface, WHITE, (x + 7, y + 7, 14, 18), border_radius=4)
-        # Jacket (SSI drip; color shows power state)
-        pygame.draw.rect(surface, jacket, (x + 5, y + 22, 18, 11), border_radius=3)
-        # Ilya's distinctive dark hair (slightly messy)
-        hair = (50, 35, 25) if not tint else tint
-        pygame.draw.rect(surface, hair, (x + 4, y - 2, 20, 10), border_radius=4)
-        pygame.draw.rect(surface, hair, (x + 3, y + 2, 5, 6), border_radius=2)
-        pygame.draw.rect(surface, hair, (x + 20, y + 2, 5, 6), border_radius=2)
-        # Face/eyes
-        pygame.draw.rect(surface, BLACK, (x + 9, y + 4, 3, 3), border_radius=1)
-        pygame.draw.rect(surface, BLACK, (x + 16, y + 4, 3, 3), border_radius=1)
-        # Iconic glasses
-        pygame.draw.rect(surface, (30, 30, 50), (x + 7, y + 2, 7, 7), 1, border_radius=1)
-        pygame.draw.rect(surface, (30, 30, 50), (x + 14, y + 2, 7, 7), 1, border_radius=1)
-        pygame.draw.line(surface, (30, 30, 50), (x + 14, y + 5), (x + 14, y + 5), 1)
-        # Hands
-        hand_color = WHITE
+        skin = (248, 228, 210)
+        skin_shadow = (222, 200, 185)
+        hair = (55, 40, 30) if not tint else tint
+        glass = (35, 35, 52)
+
+        # --- Head (pale, balding, tall forehead) -------------------------
+        # Wide forehead block so the bald top is prominent
+        pygame.draw.rect(surface, skin, (x + 4, y + 1, 20, 22), border_radius=7)
+        # Subtle highlight across the bald pate
+        pygame.draw.rect(surface, (255, 240, 225), (x + 8, y + 2, 12, 4), border_radius=2)
+        # Jaw shadow under the chin
+        pygame.draw.rect(surface, skin_shadow, (x + 6, y + 20, 16, 3), border_radius=2)
+
+        # --- Hair (horseshoe: sides + back only, bald on top) ------------
+        # Left side strip (ear to back of head)
+        pygame.draw.rect(surface, hair, (x + 3, y + 8, 3, 11), border_radius=2)
+        # Right side strip
+        pygame.draw.rect(surface, hair, (x + 22, y + 8, 3, 11), border_radius=2)
+        # Receding fringe dots above temples
+        pygame.draw.rect(surface, hair, (x + 5, y + 6, 3, 3))
+        pygame.draw.rect(surface, hair, (x + 20, y + 6, 3, 3))
+        # Faint band around back of head (visible as thin top line at hairline)
+        pygame.draw.line(surface, hair, (x + 6, y + 7), (x + 22, y + 7), 1)
+
+        # --- Eyebrows (thin, set well below the hairline) ---------------
+        pygame.draw.rect(surface, hair, (x + 7, y + 10, 5, 1))
+        pygame.draw.rect(surface, hair, (x + 16, y + 10, 5, 1))
+
+        # --- Round wire glasses ----------------------------------------
+        pygame.draw.rect(surface, glass, (x + 7, y + 11, 6, 5), 1, border_radius=3)
+        pygame.draw.rect(surface, glass, (x + 15, y + 11, 6, 5), 1, border_radius=3)
+        pygame.draw.line(surface, glass, (x + 13, y + 13), (x + 15, y + 13), 1)
+
+        # --- Eyes (small dark pupils behind glasses) --------------------
+        pygame.draw.rect(surface, BLACK, (x + 9, y + 13, 2, 2))
+        pygame.draw.rect(surface, BLACK, (x + 17, y + 13, 2, 2))
+
+        # --- Nose (subtle vertical shadow) ------------------------------
+        pygame.draw.line(surface, skin_shadow, (x + 14, y + 16), (x + 14, y + 18), 1)
+
+        # --- Mouth (neutral line) ---------------------------------------
+        pygame.draw.rect(surface, (170, 105, 105), (x + 11, y + 19, 6, 1))
+
+        # --- Body / SSI jacket ------------------------------------------
+        pygame.draw.rect(surface, jacket, (x + 4, y + 22, 20, 11), border_radius=3)
+        # Shirt V-collar
+        pygame.draw.polygon(surface, WHITE,
+                            [(x + 10, y + 22), (x + 14, y + 26), (x + 18, y + 22)])
+        pygame.draw.line(surface, (30, 40, 60), (x + 14, y + 26), (x + 14, y + 32), 1)
+
+        # --- Hands --------------------------------------------------------
         if self.facing > 0:
-            pygame.draw.rect(surface, hand_color, (x + 19, y + 16, 8, 5), border_radius=2)
+            pygame.draw.rect(surface, skin, (x + 20, y + 25, 5, 4), border_radius=2)
         else:
-            pygame.draw.rect(surface, hand_color, (x + 1, y + 16, 8, 5), border_radius=2)
-        # Legs
-        pygame.draw.rect(surface, OFF_WHITE, (x + 7, y + 32, 5, 4), border_radius=1)
-        pygame.draw.rect(surface, OFF_WHITE, (x + 16, y + 32, 5, 4), border_radius=1)
-        # Power indicator: Fire state shows little flame tuft on shoulder
+            pygame.draw.rect(surface, skin, (x + 3, y + 25, 5, 4), border_radius=2)
+
+        # --- Legs (dark trousers) ---------------------------------------
+        pygame.draw.rect(surface, (38, 46, 72), (x + 7, y + 32, 5, 4), border_radius=1)
+        pygame.draw.rect(surface, (38, 46, 72), (x + 16, y + 32, 5, 4), border_radius=1)
+
+        # Fire-state flame tuft on shoulder
         if self.power == "fire":
             flame_flicker = (now // 80) % 2
-            pygame.draw.circle(surface, ORANGE, (x + 22 if self.facing > 0 else x + 6, y + 20 - flame_flicker), 3)
-            pygame.draw.circle(surface, YELLOW, (x + 22 if self.facing > 0 else x + 6, y + 19 - flame_flicker), 2)
-        # Label: name + power
+            fx = x + 22 if self.facing > 0 else x + 6
+            pygame.draw.circle(surface, ORANGE, (fx, y + 20 - flame_flicker), 3)
+            pygame.draw.circle(surface, YELLOW, (fx, y + 19 - flame_flicker), 2)
+
+        # Label
         label = "ILYA"
         if self.power == "super":
             label = "SUPER ILYA"
@@ -1439,7 +1483,7 @@ class Player:
         if self.starred():
             label = "STAR ILYA"
         draw_label(surface, label, x + PLAYER_WIDTH // 2, y - 12, tint or CYAN, font)
-        # Fireballs
+
         for fb in self.fireballs:
             fb.draw(surface, camera_x, camera_y)
 
