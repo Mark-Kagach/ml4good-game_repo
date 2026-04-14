@@ -59,38 +59,85 @@ def _fill_rect(cells, rows, cols, char):
 
 
 # ----------------------------- LEVEL 1 ------------------------------------
-# Early OpenAI (tutorial) — introduce ? blocks, coins, mushroom, pipes.
-_L1_W, _L1_H = 80, 14
+# Early OpenAI — tutorial with a real up/down route, staircases, pipes, and
+# a handful of enemies distributed across three vertical tiers.
+_L1_W, _L1_H = 100, 14
 _l1 = []
-# Full ground (no pits in tutorial)
+# Full ground with one small tutorial pit (so "down" means something)
 _fill_row(_l1, 13, range(_L1_W), "#")
+for c in range(36, 39):
+    _l1 = [cell for cell in _l1 if not (cell[0] == 13 and cell[1] == c)]
 # Spawn platform
 _fill_row(_l1, 8, range(0, 10), "#")
-# Floating platforms
-_fill_row(_l1, 8, range(25, 32), "#")
-_fill_row(_l1, 8, range(55, 63), "#")
-_fill_row(_l1, 8, range(65, 72), "#")
-# Player + flag + portal
-_l1 += [(6, 5, "P"), (12, 72, "F"), (11, 76, "E")]
-# ? blocks (row 4) + brick cluster (row 5)
-_l1 += [(4, 12, "?"), (4, 14, "?"), (4, 16, "?"), (4, 32, "?"), (4, 64, "?")]
-_l1 += [(5, 48, "b"), (5, 50, "b"), (5, 51, "?"), (5, 52, "b"), (5, 54, "b")]
-# Coins
-_fill_row(_l1, 6, (18, 20, 22, 24, 56, 58, 60), "o")
-# Badges
-_l1 += [(10, 25, "c"), (10, 50, "c"), (10, 66, "c")]
-# Enemies (gentle: 2 walkers and a hopper)
-_l1 += [(12, 20, "w"), (12, 45, "h"), (12, 68, "w")]
-# Pipes (decoration): one left, one right
-_l1 += [(11, 36, "T"), (11, 37, "T"), (12, 36, "t"), (12, 37, "t")]
+_l1 += [(6, 5, "P")]
+
+# SECTION A — warm-up ? row + coin hints + first walker
+_l1 += [(4, 12, "?"), (4, 14, "?"), (4, 16, "?")]
+_l1 += [(6, 13, "o"), (6, 15, "o"), (6, 17, "o")]
+_l1 += [(12, 14, "w")]
+
+# SECTION B — ascending staircase (rows 10-12) onto a row-8 platform
+_l1 += [(12, 20, "#"), (12, 21, "#"), (12, 22, "#"), (12, 23, "#")]
+_l1 += [(11, 21, "#"), (11, 22, "#"), (11, 23, "#")]
+_l1 += [(10, 22, "#"), (10, 23, "#")]
+_l1 += [(9, 23, "#")]
+_fill_row(_l1, 8, range(26, 32), "#")
+_l1 += [(7, 26, "o"), (7, 28, "o"), (7, 30, "o")]  # coin trail on platform
+_l1 += [(4, 28, "?")]
+_l1 += [(6, 29, "c")]  # Badge 1 (up high)
+_l1 += [(7, 28, "h")]  # hopper on the platform (overrides the coin on (7,28), that's fine)
+
+# SECTION C — floating island over a ground pit (forces a jump)
+_fill_row(_l1, 10, range(34, 40), "#")
+_l1 += [(9, 36, "h")]  # hopper patrols the island
+_l1 += [(7, 35, "o"), (7, 37, "o"), (7, 39, "o")]
+_l1 += [(4, 37, "?")]
+
+# SECTION D — high route w/ brick cluster + a secret ? way up top
+_fill_row(_l1, 8, range(46, 56), "#")
+_l1 += [(5, 48, "b"), (5, 49, "b"), (5, 50, "?"), (5, 51, "b"), (5, 52, "b")]
+_l1 += [(3, 50, "?")]  # secret coin block above the bricks
+_l1 += [(7, 47, "w"), (7, 53, "w")]  # two walkers on the wide platform
+_l1 += [(6, 58, "d")]  # drone hovers in the gap beyond
+
+# SECTION E — low-ground coin gallery + short pipe
+_l1 += [(12, 60, "c")]  # Badge 2 at ground level
+_l1 += [(11, 64, "T"), (11, 65, "T"), (12, 64, "t"), (12, 65, "t")]
+_l1 += [(10, 64, "o"), (10, 65, "o")]
+_l1 += [(12, 68, "h")]
+
+# SECTION F — tall jumpable pipe with coins on top
+_l1 += [(9, 72, "T"), (9, 73, "T")]
+for r in (10, 11, 12):
+    _l1 += [(r, 72, "t"), (r, 73, "t")]
+_l1 += [(8, 72, "o"), (8, 73, "o")]  # reward for jumping on top
+
+# SECTION G — descending staircase w/ coin trail
+_l1 += [(12, 78, "#"), (12, 79, "#"), (12, 80, "#")]
+_l1 += [(11, 78, "#"), (11, 79, "#")]
+_l1 += [(10, 78, "#")]
+_l1 += [(9, 78, "o"), (10, 79, "o"), (11, 80, "o")]
+_l1 += [(12, 84, "w")]
+
+# SECTION H — final high approach with Badge 3
+_fill_row(_l1, 8, range(86, 94), "#")
+_l1 += [(7, 87, "o"), (7, 89, "o"), (7, 91, "o"), (7, 93, "o")]
+_l1 += [(4, 90, "?")]
+_l1 += [(6, 90, "c")]  # Badge 3 (high reward)
+_l1 += [(10, 85, "d")]  # second drone patrols the end
+
+# Flag + portal
+_l1 += [(12, 95, "F"), (11, 98, "E")]
 
 LEVEL1_QUESTION_REWARDS = {
     (12, 4): "coin",
     (14, 4): "mushroom",
     (16, 4): "coin",
-    (32, 4): "coin",
-    (64, 4): "coin",
-    (51, 5): "flower",  # hidden inside brick cluster
+    (28, 4): "coin",
+    (37, 4): "coin",
+    (50, 3): "coin",       # secret high block
+    (50, 5): "flower",     # hidden inside brick cluster
+    (90, 4): "coin",
 }
 
 # ----------------------------- LEVEL 2 ------------------------------------
@@ -124,21 +171,34 @@ _l2 += [(5, 44, "b"), (5, 45, "?"), (5, 46, "b"), (5, 47, "b"), (5, 48, "?"), (5
 _fill_row(_l2, 6, (17, 19, 21, 30, 32, 46, 47, 62, 64, 66, 76, 77, 86, 88, 91), "o")
 # Badges (3 required, one safely reachable, one moderate, one after gauntlet)
 _l2 += [(10, 30, "c"), (10, 65, "c"), (4, 90, "c")]
-# Enemies
+# Enemies (base set)
 _l2 += [(12, 28, "w"), (12, 42, "h"), (12, 50, "g"), (12, 66, "$"), (12, 76, "w"), (12, 86, "h")]
+# Extra enemies for chaos
+_l2 += [(12, 12, "w"), (7, 45, "d"), (6, 74, "d"), (12, 94, "g")]
 # Pipes (gauntlet): 2 side-by-side pipe pairs
 _l2 += [(11, 38, "T"), (11, 39, "T"), (12, 38, "t"), (12, 39, "t")]
 _l2 += [(10, 70, "T"), (10, 71, "T"), (11, 70, "t"), (11, 71, "t"), (12, 70, "t"), (12, 71, "t")]
+# Breakable brick ceiling hiding a row of coins (needs SUPER to smash through)
+_l2 += [(6, 16, "b"), (6, 17, "b"), (6, 18, "b"), (6, 19, "b")]
+_l2 += [(5, 16, "o"), (5, 17, "o"), (5, 18, "o"), (5, 19, "o")]
+# Upper-secret platform reached by the vertical elevator V at col 53
+_fill_row(_l2, 4, range(52, 57), "#")
+_l2 += [(3, 53, "o"), (3, 54, "o"), (3, 55, "o")]
+_l2 += [(3, 56, "?")]  # secret star up top
+# Extra ? block near the pipe gauntlet
+_l2 += [(4, 40, "?")]
 
 LEVEL2_QUESTION_REWARDS = {
     (13, 4): "coin",
     (15, 4): "star",
     (34, 4): "coin",
+    (40, 4): "mushroom",   # extra pre-pit mushroom
     (64, 4): "coin",
     (78, 4): "mushroom",
     (88, 4): "coin",
     (45, 5): "flower",
     (48, 5): "coin",
+    (56, 3): "star",       # secret star atop the high platform
 }
 
 # ----------------------------- LEVEL 3 ------------------------------------
@@ -219,11 +279,12 @@ LEVEL_DEFS = [
         "question_rewards": LEVEL1_QUESTION_REWARDS,
         "signs": [
             (180, 100, "OPENAI EST. 2015"),
-            (520, 100, "ELON'S $1B PLEDGE"),
-            (900, 100, "ILYA JOINS THE LAB"),
-            (1300, 100, "GPT-1 IS BORN"),
-            (1700, 100, "SCALING HYPOTHESIS"),
-            (2100, 100, "NONPROFIT DREAMS ->"),
+            (700, 100, "ELON'S $1B PLEDGE"),
+            (1300, 100, "ILYA JOINS THE LAB"),
+            (1900, 100, "GPT-1 IS BORN"),
+            (2500, 100, "SCALING HYPOTHESIS"),
+            (3200, 100, "NONPROFIT DREAMS ->"),
+            (3700, 100, "KEEP ALIGNMENT PURE"),
         ],
     },
     {
