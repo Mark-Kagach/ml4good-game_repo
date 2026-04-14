@@ -1,4 +1,4 @@
-# Alignment Adventure
+# super ilya bros
 
 A retro 80s AI safety platformer built with `pygame`.
 
