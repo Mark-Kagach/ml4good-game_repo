@@ -19,7 +19,7 @@ FPS = 60
 TILE_SIZE = 40
 GRAVITY = 0.58
 MOVE_SPEED = 4.6
-JUMP_SPEED = 12.2
+JUMP_SPEED = 13.0
 MAX_FALL_SPEED = 16
 PLAYER_WIDTH = 28
 PLAYER_HEIGHT = 36
@@ -108,12 +108,11 @@ _l1 += [(11, 64, "T"), (11, 65, "T"), (12, 64, "t"), (12, 65, "t")]
 _l1 += [(10, 64, "o"), (10, 65, "o")]
 _l1 += [(12, 68, "h")]
 
-# SECTION F — jumpable pipe with coins on top (3 tiles so the player can
-# actually land on it from ground — a 4-tile pipe is unreachable)
-_l1 += [(10, 72, "T"), (10, 73, "T")]
-for r in (11, 12):
-    _l1 += [(r, 72, "t"), (r, 73, "t")]
-_l1 += [(9, 72, "o"), (9, 73, "o")]  # reward for jumping on top
+# SECTION F — jumpable pipe with coins on top. Kept to 2 tiles (top y=440,
+# clearance ~66 px at apex) so the timing window is generous.
+_l1 += [(11, 72, "T"), (11, 73, "T")]
+_l1 += [(12, 72, "t"), (12, 73, "t")]
+_l1 += [(10, 72, "o"), (10, 73, "o")]  # reward for jumping on top
 
 # SECTION G — descending staircase w/ coin trail
 _l1 += [(12, 78, "#"), (12, 79, "#"), (12, 80, "#")]
