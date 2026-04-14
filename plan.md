@@ -1,59 +1,79 @@
-# AI Safety Mario - Implementation Plan
+# Alignment Adventure — Design Plan
 
 ## Concept
-A Mario-style 2D side-scrolling platformer with 3 levels representing the AI safety career pipeline. Player has 3 hearts. 80s retro pixel art style.
+A Super Mario Bros-style 2D side-scrolling platformer that narrates the AI
+safety career pipeline through Ilya Sutskever's timeline: Early OpenAI (2015)
+→ The Blip (2023) → SSI & The Future (2024+). Retro 80s pixel art, neon
+palette, scanline overlay, `pygame` primitives only (no external assets).
+
+## Player
+You are **ILYA SUTSKEVER**. Three hearts, power-up states, a stompable sprite
+drawn from pygame rectangles (dark hair, glasses, cyan jacket).
+
+## Power states (Mario-style)
+| State  | Trigger                   | Ability                     |
+|--------|---------------------------|-----------------------------|
+| SMALL  | default / after fire hit  | stomp only                  |
+| SUPER  | ALIGNMENT PATCH mushroom  | stomp, break bricks         |
+| FIRE   | RLHF FLOWER               | stomp, break bricks, shoot HONEST SIGNALs |
+
+Damage downgrades the power state before subtracting a heart. SAFETY STAR
+gives ~6 seconds of invincibility on top of any state.
 
 ## Levels
-1. **ML4Good** - Beginner level. Simple platforms, few enemies. Green/friendly theme. Enemies: "Misaligned Chatbots" (basic walkers). Collectibles: "Alignment Papers". End: reach the "Graduation Portal".
-2. **MATS** - Medium difficulty. More complex platforming, moving platforms. Purple/neon theme. Enemies: "Reward Hackers" (faster, jump), "Hallucination Ghosts" (float). Collectibles: "Research Credits". End: reach the "Fellowship Portal".
-3. **Full-Time Job** - Hard. Fast-paced, tricky jumps, more enemies. Red/intense theme. Enemies: "Rogue AGIs" (smart, fast), "Deceptive Agents" (appear/disappear). Collectibles: "Safety Publications". End: reach the "Lab Portal" to win.
+1. **Early OpenAI** — 2015 tutorial. Walkers only, ? blocks with coins and a
+   mushroom, decorative pipes. Friendly green theme.
+2. **The Blip** — 2023 intermediate. Moving platforms, pipe gauntlet, a
+   hidden SAFETY STAR, Shady Greg phasing in and out, MSFT lawyer hoppers,
+   Twitter trolls, and a fire flower behind a brick. Purple/magenta theme.
+3. **SSI & The Future** — 2024+ finale. Supply-depot mid-level with a full
+   power-up set (mushroom + star + flower), a coin timing gap, then a boss
+   arena where **SCAMA ALTMAN** patrols a floor flanked by two raised
+   pedestals the player drops down from. SCAMA takes 3 stomps. Portal
+   unlocks after the required badges are collected; flagpole gives a
+   score bonus before the portal. Red theme.
 
-## Core Mechanics
-- Arrow keys / WASD to move, Space to jump
-- 3 hearts displayed top-left
-- Hit enemy = lose 1 heart, brief invincibility
-- 0 hearts = game over screen with retry
-- Collect items for score
-- Reach end portal to advance level
-- Simple physics: gravity, ground collision, platform collision
-
-## Technical Approach
-- **Single file**: `game.py` using pygame
-- All graphics drawn with pygame primitives (no external assets needed)
-- 800x600 window
-- Tile-based level design (simple 2D arrays)
-- Scrolling camera follows player
-- Retro pixel font, neon colors, scanline effect for 80s vibe
-
-## Architecture (single file)
+## Tile characters
 ```
-- Constants & Colors
-- Player class (sprite, movement, jump, hearts, invincibility)
-- Enemy classes (different behaviors per type)
-- Platform class
-- Collectible class
-- Portal class
-- Level data (3 level layouts as tile maps)
-- Camera class
-- HUD (hearts, score, level name)
-- Game states: MENU, PLAYING, GAME_OVER, WIN
-- Main game loop
+#  solid block              ?  question block (coin/power-up)
+b  brick (breakable super)  o  coin
+c  badge collectible        !  spike hazard
+w  walker enemy             h  hopper enemy
+d  drone enemy              M  horizontal moving platform
+V  vertical moving platform T  pipe top (solid)
+t  pipe body (solid)        F  flagpole
+P  player spawn             E  portal goal
+B  SCAMA boss               g  Shady Greg
+a  e/acc zealot             x  CCP spy drone
+$  $10B funding money-bag
 ```
 
-## Visual Style
-- Dark backgrounds with neon accent colors (cyan, magenta, green)
-- Pixel-art characters drawn with rectangles
-- Scanline overlay effect
-- Retro bitmap-style font
-- Star/grid backgrounds
-- CRT glow feel
+## Controls
+- **Arrows / WASD** — move
+- **Space / W / Up** — jump
+- **X / J** — throw HONEST SIGNAL (fire state only)
+- **Enter** — start / retry
+- **Esc** — title / quit
 
-## Timeline (fits in ~15 min agent work)
-1. Set up pygame boilerplate + game loop
-2. Player movement + physics
-3. Level tile system + camera
-4. Enemies with basic AI
-5. Hearts, collectibles, portals
-6. 3 level layouts
-7. Menu, game over, win screens
-8. 80s visual polish (colors, effects)
+## Scoring
+- Badge (`c`): 100
+- Coin (`o`): 20
+- Stomp enemy: 250 (boss: 500 per hit, 1500 defeated)
+- Flagpole slide bonus: 100-500 depending on slide height
+
+## Technical approach
+- Single file `game.py`, 960×540 window, 60 FPS.
+- Tile-based level as 2D strings; one row = 40px; levels are wider than the
+  viewport with a camera.
+- All sprites drawn with pygame primitives, CRT scanline overlay.
+- Lightweight physics: gravity, ground/platform collision, coyote-free
+  jumping (press-to-jump only when grounded).
+- Single Game class with states: MENU, PLAYING, GAME_OVER, WIN.
+
+## Why Level 3 was broken before
+SCAMA patrolled the same 8-tile platform that was the only path to the
+portal, with a 2-tile ceiling (no room above to jump+stomp safely) plus
+two tracking CCP drones and a charging e/acc zealot converging on the
+approach. No power-ups, no raised stomp pad. The redesign gives the
+player a supply depot earlier and a proper boss arena with stomp
+pedestals so SCAMA becomes a skill check rather than a physics trap.
