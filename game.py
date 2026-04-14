@@ -10,6 +10,8 @@ import sys
 
 import pygame
 
+from audio import Audio
+
 
 SCREEN_WIDTH = 960
 SCREEN_HEIGHT = 540
@@ -1156,6 +1158,7 @@ class Player:
         self.head_bumped_blocks = set()  # rect ids bumped this frame
         self.bumped_block = None  # the block rect bumped this frame
         self.reached_flag = False
+        self.audio = None  # set by Game after construction
 
     def reset_position(self, spawn):
         self.rect.topleft = spawn
@@ -1177,12 +1180,16 @@ class Player:
             self.invincible_until = now + INVINCIBLE_MS
             self.message = f"-FLOWER: {label}"
             self.message_until = now + 1200
+            if self.audio:
+                self.audio.play_sfx("damage")
             return False
         if self.power == "super":
             self.power = "small"
             self.invincible_until = now + INVINCIBLE_MS
             self.message = f"-PATCH: {label}"
             self.message_until = now + 1200
+            if self.audio:
+                self.audio.play_sfx("damage")
             return False
         self.hearts -= 1
         self.invincible_until = now + INVINCIBLE_MS
@@ -1190,6 +1197,8 @@ class Player:
         self.message_until = now + 1400
         self.vel.x = -self.facing * 5
         self.vel.y = -6
+        if self.audio:
+            self.audio.play_sfx("damage")
         return True
 
     def bounce(self):
@@ -1205,19 +1214,27 @@ class Player:
             self.score += 300
             self.message = "+ALIGNMENT PATCH (+1 heart)"
             self.message_until = now + 1400
+            if self.audio:
+                self.audio.play_sfx("powerup")
         elif kind == "star":
             self.star_until = now + 6000
             self.score += 500
             self.message = "+SAFETY STAR - INVINCIBLE!"
             self.message_until = now + 1600
+            if self.audio:
+                self.audio.play_sfx("powerup")
         elif kind == "flower":
             self.power = "fire"
             self.score += 400
             self.message = "+RLHF FLOWER (press X/J)"
             self.message_until = now + 1600
+            if self.audio:
+                self.audio.play_sfx("powerup")
         elif kind == "coin":
             self.coins += 1
             self.score += 20
+            if self.audio:
+                self.audio.play_sfx("coin")
 
     def shoot(self):
         if self.power != "fire":
@@ -1230,6 +1247,8 @@ class Player:
         fy = self.rect.centery - 2
         self.fireballs.append(Fireball(fx, fy, self.facing))
         self.shoot_cooldown = 14
+        if self.audio:
+            self.audio.play_sfx("fireball")
         return True
 
     def update(self, level, keys):
@@ -1249,6 +1268,8 @@ class Player:
         if (keys[pygame.K_SPACE] or keys[pygame.K_UP] or keys[pygame.K_w]) and self.on_ground:
             self.vel.y = -JUMP_SPEED
             self.on_ground = False
+            if self.audio:
+                self.audio.play_sfx("jump")
         if keys[pygame.K_x] or keys[pygame.K_j]:
             self.shoot()
         self.vel.y = min(self.vel.y + GRAVITY, MAX_FALL_SPEED)
@@ -1583,6 +1604,10 @@ class Game:
         self.label_font = pygame.font.SysFont("consolas", 11, bold=True)
         self.big_font = pygame.font.SysFont("consolas", 52, bold=True)
         self.scanlines = self.build_scanlines()
+        # Audio: show a brief loading screen while we synthesize
+        self._show_loading()
+        self.audio = Audio()
+        self.audio.init()
         self.state = "menu"
         self.level_index = 0
         self.level = None
@@ -1590,6 +1615,16 @@ class Game:
         self.camera_x = 0
         self.camera_y = 0
         self.banner_until = 0
+        self._menu_music_started = False
+        self._end_music_played = False
+
+    def _show_loading(self):
+        self.screen.fill(BLACK)
+        txt = self.title_font.render("GENERATING CHIPTUNE...", True, CYAN)
+        self.screen.blit(txt, (SCREEN_WIDTH // 2 - txt.get_width() // 2, SCREEN_HEIGHT // 2 - 20))
+        sub = self.small_font.render("(the 1987 synthesizer is warming up)", True, MAGENTA)
+        self.screen.blit(sub, (SCREEN_WIDTH // 2 - sub.get_width() // 2, SCREEN_HEIGHT // 2 + 30))
+        pygame.display.flip()
 
     def build_scanlines(self):
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -1601,6 +1636,8 @@ class Game:
         self.level_index = 0
         self.load_level(reset_hearts=True)
         self.state = "playing"
+        self._end_music_played = False
+        self.audio.play_music(f"level{self.level_index + 1}")
 
     def load_level(self, reset_hearts=False):
         self.level = Level(LEVEL_DEFS[self.level_index])
@@ -1611,20 +1648,27 @@ class Game:
             self.player.badges = 0
             self.player.fireballs = []
             self.player.reached_flag = False
+        self.player.audio = self.audio
         self.camera_x = 0
         self.camera_y = 0
         self.banner_until = pygame.time.get_ticks() + 2200
 
     def next_level(self):
         self.level_index += 1
-        self.player.hearts = min(3, self.player.hearts + LEVEL_CLEAR_HEAL)
+        self.player.hearts = min(Player.HEART_CAP, self.player.hearts + LEVEL_CLEAR_HEAL)
+        if self.audio:
+            self.audio.play_sfx("portal")
         if self.level_index >= len(LEVEL_DEFS):
             self.state = "win"
             return
         self.load_level(reset_hearts=False)
+        self.audio.play_music(f"level{self.level_index + 1}")
 
     def restart_from_menu(self):
         self.state = "menu"
+        self._menu_music_started = False
+        self._end_music_played = False
+        self.audio.stop_music()
 
     def update_camera(self):
         target_x = self.player.rect.centerx - SCREEN_WIDTH // 2
@@ -1649,16 +1693,20 @@ class Game:
         if self.player.bumped_block:
             bumped = self.player.bumped_block
             for qb in self.level.question_blocks:
-                if qb.rect is bumped and not qb.spent:
-                    reward = qb.bump()
-                    if reward == "coin":
-                        self.player.pickup("coin")
-                        self.player.message = "+20 COIN"
-                        self.player.message_until = now + 700
-                    elif reward:
-                        self.level.power_ups.append(
-                            PowerUp(qb.rect.x, qb.rect.y, reward)
-                        )
+                if qb.rect is bumped:
+                    if not qb.spent:
+                        reward = qb.bump()
+                        self.audio.play_sfx("bump")
+                        if reward == "coin":
+                            self.player.pickup("coin")
+                            self.player.message = "+20 COIN"
+                            self.player.message_until = now + 700
+                        elif reward:
+                            self.level.power_ups.append(
+                                PowerUp(qb.rect.x, qb.rect.y, reward)
+                            )
+                    else:
+                        self.audio.play_sfx("bump")
                     break
             for brick in self.level.bricks:
                 if brick.rect is bumped and not brick.broken:
@@ -1668,6 +1716,9 @@ class Game:
                         self.player.score += 50
                         self.player.message = "+50 BRICK SMASHED"
                         self.player.message_until = now + 700
+                        self.audio.play_sfx("brick")
+                    else:
+                        self.audio.play_sfx("bump")
                     break
 
         # Coin pickups
@@ -1749,6 +1800,7 @@ class Game:
                     killed = enemy.hit()
                     self.player.bounce()
                     self.player.invincible_until = max(self.player.invincible_until, now + 300)
+                    self.audio.play_sfx("stomp")
                     if killed:
                         self.player.score += 1500
                         self.player.message = "+1500 SCAMA DEFEATED!"
@@ -1763,6 +1815,7 @@ class Game:
                     self.player.bounce()
                     self.player.message = f"+250 stomped {enemy.label}!"
                     self.player.message_until = now + 1200
+                    self.audio.play_sfx("stomp")
             else:
                 self.player.damage(enemy.label)
 
@@ -1774,6 +1827,7 @@ class Game:
                 self.player.score += bonus
                 self.player.message = f"+{bonus} FLAGPOLE BONUS"
                 self.player.message_until = now + 1400
+                self.audio.play_sfx("flagpole")
             if self.player.reached_flag:
                 self.level.flagpole.slide_flag()
 
@@ -1873,7 +1927,7 @@ class Game:
             "BREAK BRICKS while SUPER. SLIDE THE FLAGPOLE for a bonus.",
             "",
             "MOVE: Arrows / WASD     JUMP: Space / W     SHOOT: X / J",
-            "ENTER to begin. ESC to quit/return to title.",
+            "ENTER to begin. ESC to quit/return to title. M mutes music.",
         ]
         for idx, line in enumerate(lines):
             color = WHITE if idx != 0 else CYAN
@@ -1928,10 +1982,18 @@ class Game:
                         else:
                             pygame.quit()
                             sys.exit()
+                    if event.key == pygame.K_m:
+                        enabled = self.audio.toggle_mute()
+                        if enabled:
+                            # Replay whatever should be playing for the current state
+                            self._apply_state_music(force=True)
                     if self.state == "menu" and event.key == pygame.K_RETURN:
                         self.start_new_game()
                     elif self.state in {"game_over", "win"} and event.key == pygame.K_r:
                         self.start_new_game()
+
+            # Ensure the right music is playing for the current state
+            self._apply_state_music()
 
             if self.state == "playing":
                 self.update_playing()
@@ -1945,6 +2007,27 @@ class Game:
 
             self.screen.blit(self.scanlines, (0, 0))
             pygame.display.flip()
+
+    def _apply_state_music(self, force=False):
+        """Keep music aligned with current game state."""
+        if not self.audio or not self.audio.enabled:
+            return
+        if self.state == "menu":
+            if force or not self._menu_music_started:
+                self.audio.play_music("menu")
+                self._menu_music_started = True
+                self._end_music_played = False
+        elif self.state == "playing":
+            # level-specific; start_new_game / next_level already kicks it off,
+            # but on fast-state transitions this keeps it correct
+            self.audio.play_music(f"level{self.level_index + 1}")
+            self._end_music_played = False
+        elif self.state in ("game_over", "win"):
+            if not self._end_music_played or force:
+                self.audio.stop_music()
+                self.audio.play_music("win" if self.state == "win" else "lose", loops=0)
+                self._end_music_played = True
+                self._menu_music_started = False
 
 
 if __name__ == "__main__":

@@ -52,6 +52,7 @@ $  $10B funding money-bag
 - **Arrows / WASD** — move
 - **Space / W / Up** — jump
 - **X / J** — throw HONEST SIGNAL (fire state only)
+- **M** — mute / unmute music
 - **Enter** — start / retry
 - **Esc** — title / quit
 
@@ -62,13 +63,18 @@ $  $10B funding money-bag
 - Flagpole slide bonus: 100-500 depending on slide height
 
 ## Technical approach
-- Single file `game.py`, 960×540 window, 60 FPS.
+- Main module `game.py`, 960×540 window, 60 FPS.
 - Tile-based level as 2D strings; one row = 40px; levels are wider than the
   viewport with a camera.
 - All sprites drawn with pygame primitives, CRT scanline overlay.
 - Lightweight physics: gravity, ground/platform collision, coyote-free
   jumping (press-to-jump only when grounded).
 - Single Game class with states: MENU, PLAYING, GAME_OVER, WIN.
+- **Audio (`audio.py`):** procedural chiptune synthesized at startup with
+  numpy + `pygame.mixer`. NES-style square leads, triangle bass, noise
+  drums; unique loop per menu/level, one-shot fanfares for win/lose, ten
+  SFX (jump, coin, stomp, damage, powerup, fireball, brick, portal,
+  flagpole, bump). No external audio files.
 
 ## Why Level 3 was broken before
 SCAMA patrolled the same 8-tile platform that was the only path to the

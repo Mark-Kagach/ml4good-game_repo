@@ -20,6 +20,7 @@ uv run python game.py
 | Move                        | Arrows / `A` `D`           |
 | Jump                        | `Space` / `W` / `Up`       |
 | Shoot HONEST SIGNAL (fire)  | `X` / `J`                  |
+| Mute / unmute music         | `M`                        |
 | Start / retry               | `Enter`                    |
 | Return to title / quit      | `Esc`                      |
 
@@ -55,9 +56,22 @@ path, and finishes with a **proper boss arena:** flat floor between two
 raised pedestals so you can drop-stomp SCAMA's head. Three good stomps
 and he's done.
 
+## Music and SFX
+
+Every sound is **synthesized at startup** — no audio files shipped. On
+launch you'll see `GENERATING CHIPTUNE...` for about a quarter-second
+while we bake:
+
+- A menu theme, a distinct loop per level, and short fanfares for win /
+  lose — NES-style square lead, triangle bass, noise-based drums.
+- Ten one-shot SFX: jump, coin, stomp, damage, powerup, fireball, brick
+  break, portal, flagpole slide, block bump.
+
+Press `M` in-game to toggle everything off/on.
+
 ## File layout
 
-- `game.py` — single-file game (player, enemies, level parser, level
-  data, main loop).
+- `game.py` — game logic (player, enemies, level parser, level data, loop).
+- `audio.py` — procedural chiptune + SFX synthesis.
 - `plan.md` — design doc and rationale.
-- `pyproject.toml` / `uv.lock` — deps (just pygame).
+- `pyproject.toml` / `uv.lock` — deps (pygame + numpy).
